@@ -32,8 +32,11 @@ class jobChecker():
         try:
             self.s.login(self.hostname, self.username, self.password)
 
-            self.s.sendline(self.command1)   # run a command
-            self.s.prompt()             # match the prompt
+            # self.s.sendline(self.command1)   # run a command
+            # self.s.prompt()             # match the prompt
+            # self.matchIndex(self.experimentDown,4)
+
+            # print self.s.before
             # print self.s.before
             # outputEmpty1 = 'Total Jobs: 0   Active Jobs: 0   Idle Jobs: 0   Blocked Jobs: 0'
             # if outputEmpty1 in output1:
@@ -41,8 +44,7 @@ class jobChecker():
 
             self.s.sendline(self.command2)   # run a command
             self.s.prompt()             # match the prompt
-            print self.s.before
-            self.matchIndex()
+            self.matchIndex(self.experimentDown,8)
             # outputEmpty2 = ''
             # if outputEmpty2 in output2:
             #     self.errorAlert()
@@ -52,14 +54,21 @@ class jobChecker():
             print "pxssh failed on login."
             print str(e)
 
-    def matchIndex(self):
-        index = self.s.getwinsize()
-        print index[0]
-        print index[1]
-        if index[1] < 8:
-            self.errorAlert(self.experimentDown)
+    def matchIndex(self,emailSubject,indexMinLength):
+        if "main-resub.sh" in self.s.before:
+            emailSubject = 'main script running'
+            self.errorAlert(emailSubject)
         else:
-            pass
+            emailSubject = 'main script NICHT running'
+            self.errorAlert(emailSubject)
+
+        #old:
+        # lines = self.s.before.split('\r\n') # \n is the linebreak character on unix, i.e. split by newline
+        # print lines
+        # if len(lines) < indexMinLength:
+        #     self.errorAlert(emailSubject)
+        # else:
+        #     pass
 
         # except EOF:
         #     self.errorAlert(self.checkerFailed)
